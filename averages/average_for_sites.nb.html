@@ -421,13 +421,13 @@ ave_df7&lt;-site_tree(7,averages_of_trees_by_site[[7]])</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NvbWJpbmUgdGhlIGluZGl2aWR1YWwgZGF0YWZyYW1lcyBhIHNpbmdsZSBkYXRhZnJhbWVcbmF2ZXJhZ2Vfb2ZfdHJlZXNfbWFzc2l2ZTwtcmJpbmQoYXZlX2RmMSxhdmVfZGYyLGF2ZV9kZjMsYXZlX2RmNCxhdmVfZGY1LGF2ZV9kZjYsYXZlX2RmNylcbiNleHBvcnQgdGhlIGF2ZXJhZ2VzIHBlciBzaXRlIGFzIGEgY3N2XG53cml0ZS5jc3YoZGZfYXZlcmFnZV9ieV9zaXRlLFwiYXZlcmFnZXNfb2Zfc2l0ZXNfQUxMLmNzdlwiKVxuI2V4cG9ydCB0aGUgYXZlcmFnZXMgcGVyIHRyZWUgd2l0aGluIGEgc2l0ZSBhcyBhIGNzdlxud3JpdGUuY3N2KGF2ZXJhZ2Vfb2ZfdHJlZXNfbWFzc2l2ZSwgZmlsZT1cImF2ZXJhZ2VzX29mX3RyZWVfQUxMLmNzdlwiKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NvbWJpbmUgdGhlIGluZGl2aWR1YWwgZGF0YWZyYW1lcyBhIHNpbmdsZSBkYXRhZnJhbWVcbmF2ZXJhZ2Vfb2ZfdHJlZXNfbWFzc2l2ZTwtcmJpbmQoYXZlX2RmMSxhdmVfZGYyLGF2ZV9kZjMsYXZlX2RmNCxhdmVfZGY1LGF2ZV9kZjYsYXZlX2RmNylcbiNleHBvcnQgdGhlIGF2ZXJhZ2VzIHBlciBzaXRlIGFzIGEgY3N2XG53cml0ZS5jc3YoZGZfYXZlcmFnZV9ieV9zaXRlLFwiYXZlcmFnZXNfb2Zfc2l0ZXNfQUxMLmNzdlwiKVxuI2V4cG9ydCB0aGUgYXZlcmFnZXMgcGVyIHRyZWUgd2l0aGluIGEgc2l0ZSBhcyBhIGNzdlxud3JpdGUuY3N2KGF2ZXJhZ2Vfb2ZfdHJlZXNfbWFzc2l2ZSwgZmlsZT1cImF2ZXJhZ2VzX29mX3RyZWVzX0FMTC5jc3ZcIilcbmBgYCJ9 -->
 <pre class="r"><code>#combine the individual dataframes a single dataframe
 average_of_trees_massive&lt;-rbind(ave_df1,ave_df2,ave_df3,ave_df4,ave_df5,ave_df6,ave_df7)
 #export the averages per site as a csv
 write.csv(df_average_by_site,&quot;averages_of_sites_ALL.csv&quot;)
 #export the averages per tree within a site as a csv
-write.csv(average_of_trees_massive, file=&quot;averages_of_tree_ALL.csv&quot;)</code></pre>
+write.csv(average_of_trees_massive, file=&quot;averages_of_trees_ALL.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
