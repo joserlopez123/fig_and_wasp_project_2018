@@ -1,0 +1,178 @@
+---
+title: "Averages per site and averages by fig trees within the site notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+setwd("D:/Documents/BoxSync/Nason_Lab/Jose/fig_and_wasp_project_2018/averages")
+#/d/Documents/BoxSync/Nason_Lab/jose/fig_and_wasp_project_2018/averages 
+getwd()
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+Install all packages needed for the code.
+```{r}
+#install.packages("xlsx")
+install.packages("readxl")
+#library("xlsx")
+library("readxl")
+install.packages("data.table")
+library("data.table")
+install.packages("data.table")
+library("data.table")
+install.packages("plyr")
+library ('plyr')
+
+```
+Read in the file of interest as an excel file
+
+```{r}
+getwd()
+figs <- read_excel("ALL.xlsx")
+```
+Create box plots that will show the measurements for left syconium, right syconium, left ovary and right ovary.
+```{r}
+attach(figs)
+par(mfrow=c(2,2))
+boxplot(figs$`L Syc`~figs$Site, main="Boxplot Left Syconium Wall Width by Site", xlab="Site",ylab="Left Syconium Wall (cm)")
+boxplot(figs$`R Syc`~figs$Site, main="Boxplot Right Syconium Wall Width by Site", xlab="Site",ylab="Right Syconium Wall (cm)")
+boxplot(figs$`L Ovary`~figs$Site, main="Boxplot Left Ovary Width by Site", xlab="Site",ylab="Left Ovary (cm)")
+boxplot(figs$`R Ovary`~figs$Site, main="Boxplot Right Ovary Width by Site", xlab="Site",ylab="Right Ovary (cm)")
+
+```
+```{r}
+#creates a list of the unique sites 
+sites=unique(figs$Site)
+
+```
+
+
+
+```{r}
+averages<-function(site_of_interest){
+  mean_for_site=lapply(figs[which(figs$Site==sites[site_of_interest]),3:9],mean)
+  return(mean_for_site)
+}
+```
+
+```{r}
+#creates a list of the averages of measurements per site
+average_by_sites<-lapply(1:length(sites),averages)
+
+
+```
+
+
+```{r}
+#creates a dataframe from the averages of site and will rename the rows appropriately
+df_average_by_site <- ldply (average_by_sites, data.frame)
+row.names(df_average_by_site)<-sites
+```
+
+
+```{r}
+
+#function to get the average of a tree
+average_of_tree<-function(tree,site_index){
+  just_one_site<-figs[which(figs$Site==sites[site_index]),]
+  site_of_interest<-sites[site_index]
+  trees_in_one_site<-unique(just_one_site$Tree)
+  tree_of_interest<-trees_in_one_site[tree]
+  #which(just_one_site$Tree==trees_in_one_site[1])
+  df_of_tree<-data.frame(lapply(figs[which(just_one_site$Tree==trees_in_one_site[tree]),3:9],mean))
+  row.names(df_of_tree)<-sprintf("site_%s_tree_%s", site_of_interest,tree_of_interest)
+  return(df_of_tree)
+}
+
+```
+
+```{r}
+
+#function that will take the averages of all of the trees within a site 
+average_of_single_site<-function(site_index){
+  just_one_site<-figs[which(figs$Site==sites[site_index]),]
+  trees_in_one_site<-unique(just_one_site$Tree)
+  length_of_site=length(trees_in_one_site)
+  if (length_of_site>1){
+    averages_site<-mapply(average_of_tree,tree=1:length_of_site, site_index=site_index, USE.NAMES = TRUE)
+
+    averages_site<-data.frame(averages_site)
+
+  }
+  else{
+    
+    averages_site<-average_of_tree(1,site_index = site_index)
+    t_averages_site<-transpose(averages_site)
+    rownames(t_averages_site)<-colnames(figs[3:9])
+    colnames(t_averages_site)<-rownames(averages_site)
+
+  }
+  return(averages_site)
+}
+
+#creates a list of 7 sites that contain the averages of measurements
+averages_of_trees_by_site<-lapply(1:length(unique(figs$Site)),average_of_single_site)
+
+```
+
+```{r}
+
+#creates a unique identifier of site and tree
+site_and_tree_name<-function(tree_of_interest,site_of_interest){
+  row_name<-sprintf("site_%s_tree_%s", site_of_interest,tree_of_interest)
+  return(row_name)
+}
+
+#reformats the combined site averages and assigns unique identifier to the rows 
+site_tree<-function(site_index,list_to_df){
+  average_names<-c("Length","Width","L.Syc","L.Ovary","R.Syc","R.Ovary","Ostiole")
+  just_one_site<-figs[which(figs$Site==sites[site_index]),]
+  site_of_interest<-sites[site_index]
+  trees_in_one_site<-unique(just_one_site$Tree)
+  
+  
+  temp=data.frame(matrix(unlist(list_to_df),nrow=7,byrow=TRUE))
+  t_temp<-transpose(temp)
+  colnames(t_temp)<-average_names
+  row_names<-mapply(site_and_tree_name, tree_of_interest=trees_in_one_site, site_of_interest=sites[site_index])
+  rownames(t_temp)<-row_names
+  
+  return(t_temp)
+}
+
+#create dataframes of each site
+ave_df1<-site_tree(1,averages_of_trees_by_site[[1]])
+ave_df2<-site_tree(2,averages_of_trees_by_site[[2]])
+ave_df3<-site_tree(3,averages_of_trees_by_site[[3]])
+ave_df4<-site_tree(4,averages_of_trees_by_site[[4]])
+ave_df5<-site_tree(5,averages_of_trees_by_site[[5]])
+ave_df6<-site_tree(6,averages_of_trees_by_site[[6]])
+ave_df7<-site_tree(7,averages_of_trees_by_site[[7]])
+
+
+
+
+
+```
+
+```{r}
+#combine the individual dataframes a single dataframe
+average_of_trees_massive<-rbind(ave_df1,ave_df2,ave_df3,ave_df4,ave_df5,ave_df6,ave_df7)
+
+#export the averages per site as a csv
+write.csv(df_average_by_site,"averages_of_sites_ALL.csv")
+
+#export the averages per tree within a site as a csv
+write.csv(average_of_trees_massive, file="averages_of_trees_ALL.csv")
+
+```
+
